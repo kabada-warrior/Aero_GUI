@@ -1,0 +1,44 @@
+data:
+  input_pth: None
+  output_pth: /Users/xuehao/Desktop/code_proj/aero_1_GUI/data/tmp/demo_output.txt
+
+time_steps: 100
+
+
+# 主交互窗口
+window:
+  name: demo
+  size: #左上，右下脚点坐标
+    - 100
+    - 100 
+    - 1800
+    - 1200
+
+# label设置（如校徽）
+label:
+  pic1:
+    path: /Users/xuehao/Desktop/code_proj/aero_1_GUI/data/tmp/school_symbol.png
+    size:
+      - 50
+      - 50
+    pos:
+      - 12
+      - 12
+
+# 滑动条设置
+slider:
+  range:
+    - 0
+    - 0
+
+# 绘图窗口
+figure:
+  - name: temp
+
+# 模型配置
+model: 
+  - out_dir: /Users/xuehao/Desktop/code_proj/aero_1_GUI/data/output
+  
+
+
+
