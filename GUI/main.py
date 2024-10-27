@@ -1,9 +1,10 @@
 import os
+import os.path as osp
 import sys
 import yaml
 import numpy as np
 import matplotlib.pyplot as plt
-from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QPushButton, \
+from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QHBoxLayout, QPushButton, \
                             QWidget, QLabel, QSlider, QProgressBar, QFileDialog
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
@@ -11,7 +12,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from utils import DataHelper, ModelInferenceThread
 
 
-
+proj_dir = osp.dirname(osp.dirname(__file__))
 
 
 class ContourPlotCanvas(FigureCanvas):
@@ -37,7 +38,9 @@ class ContourPlotCanvas(FigureCanvas):
 
 
         contour1 = self.ax[0].contourf(data[0], cmap='viridis')
+        self.ax[0].set_title("Temperature")
         contour2 = self.ax[1].contourf(data[1], cmap='plasma')
+        self.ax[1].set_title("Concentration")
 
         self.colorbar1 = self.fig.colorbar(contour1, ax=self.ax[0])
         self.colorbar2 = self.fig.colorbar(contour2, ax=self.ax[1])
@@ -55,8 +58,8 @@ class MainWindow(QMainWindow):
 
         # 模块初始化
         self.init_window()
+        self.init_label()
         self.init_file_path_editor() # 输入文件路径编辑模块
-        # self.init_label()
         self.init_canvas()
         self.init_slider()
         self.init_progress_bar()
@@ -170,7 +173,12 @@ class MainWindow(QMainWindow):
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
 
-        self.layout = QVBoxLayout(central_widget) # 垂直布局
+        self.layout = QVBoxLayout(central_widget) # 主控件布局，垂直形式
+        # 设置 main_layout 的边距和间距
+        self.layout.setContentsMargins(10, 100, 20, 20)  # 左、上、右、下边距
+        self.layout.setSpacing(10)  # 控件之间的间距
+
+        self.top_layout = QHBoxLayout()
     
 
     def init_label(self):
@@ -178,14 +186,18 @@ class MainWindow(QMainWindow):
         标签,比如校徽logo
         '''
         cfg = self.cfg['label']
-        label = QLabel(self)
+        for key, label_cfg in cfg.items():
+            label = QLabel(self)
+            
+            label_pth = osp.join(proj_dir, label_cfg['path'])
+            pixmap = QPixmap(label_pth)
+            
+            pixmap = pixmap.scaled(*label_cfg['size'], Qt.KeepAspectRatio)
+            label.setPixmap(pixmap)
 
-        pixmap = QPixmap(cfg['pic1']['path'])  
-        pixmap = pixmap.scaled(*cfg['pic1']['size'], Qt.KeepAspectRatio)
-        label.setPixmap(pixmap)
-
-        label.setGeometry(*cfg['pic1']['pos'], *cfg['pic1']['size'])  # (x, y, width, height)
-        self.layout.addWidget(label)
+            label.setGeometry(*label_cfg['pos'], *label_cfg['size'])  # (x, y, width, height)
+            # 添加到布局中
+            self.top_layout.addWidget(label)
 
 
     def init_slider(self):
@@ -213,7 +225,8 @@ class MainWindow(QMainWindow):
         # self.canvas.plot_contour(self.data[time_index])  # 使用当前时间点数据更新图表
 
         # 测试用 
-        data = self.get_data(self.cfg['data']['output_pth'])
+        data_pth = osp.join(proj_dir, self.cfg['data']['output_pth'])
+        data = self.get_data(data_pth)
         self.canvas.plot_contour(data)
     
 
@@ -235,11 +248,7 @@ def main(cfg_pth):
 
 
 if __name__ == '__main__':
-    proj_pth = "/Users/xuehao/Desktop/code_proj/aero_1_GUI"
-    cfg_pth = os.path.join(proj_pth, "config/cfg_demo.yml")
-    # with open(cfg_pth, 'r') as file:
-    #     cfg = yaml.safe_load(file)
-
+    cfg_pth = osp.join(proj_dir, "config/cfg_demo.yml")
     main(cfg_pth)
 
 

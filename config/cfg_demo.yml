@@ -1,6 +1,6 @@
 data:
   input_pth: None
-  output_pth: /Users/xuehao/Desktop/code_proj/aero_1_GUI/data/tmp/demo_output.txt
+  output_pth: data/tmp/demo_output.txt
 
 time_steps: 100
 
@@ -17,13 +17,21 @@ window:
 # label设置（如校徽）
 label:
   pic1:
-    path: /Users/xuehao/Desktop/code_proj/aero_1_GUI/data/tmp/school_symbol.png
+    path: data/pic/sjtu.png
     size:
-      - 50
-      - 50
+      - 80
+      - 80
     pos:
-      - 12
-      - 12
+      - 10
+      - 10
+  pic2:
+    path: data/pic/nwpu.png
+    size:
+      - 80
+      - 80
+    pos:
+      - 100
+      - 10
 
 # 滑动条设置
 slider:
@@ -37,7 +45,7 @@ figure:
 
 # 模型配置
 model: 
-  - out_dir: /Users/xuehao/Desktop/code_proj/aero_1_GUI/data/output
+  - out_dir: data/output
   
 
 
