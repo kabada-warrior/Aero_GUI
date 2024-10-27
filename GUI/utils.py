@@ -13,6 +13,7 @@ class DataHelper():
         '''
         用于demo示例文件的读取
         '''
+        print(file_pth)
         with open(file_pth, 'r') as file:
             lines = file.readlines()
     

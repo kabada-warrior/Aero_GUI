@@ -12,7 +12,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from utils import DataHelper, ModelInferenceThread
 
 
-proj_dir = osp.dirname(osp.dirname(__file__))
+PROJ_DIR = sys._MEIPASS if getattr(sys, 'frozen', False) else osp.dirname(osp.dirname(__file__))
+
 
 
 class ContourPlotCanvas(FigureCanvas):
@@ -127,7 +128,8 @@ class MainWindow(QMainWindow):
 
     def init_modelThread(self):
         cfg = self.cfg['model']
-        self.thread = ModelInferenceThread(self.cfg['time_steps'], self.data_helper, self.cfg['data']['output_pth'])
+        data_path = osp.join(PROJ_DIR, self.cfg['data']['output_pth'])
+        self.thread = ModelInferenceThread(self.cfg['time_steps'], self.data_helper, data_path)
         self.thread.result_ready.connect(self.update_plot)  # 连接推理完成的信号
         self.thread.progress_signal.connect(self.update_progress)  # 连接进度信号
         self.thread.start()  # 开始推理
@@ -189,7 +191,7 @@ class MainWindow(QMainWindow):
         for key, label_cfg in cfg.items():
             label = QLabel(self)
             
-            label_pth = osp.join(proj_dir, label_cfg['path'])
+            label_pth = osp.join(PROJ_DIR, label_cfg['path'])
             pixmap = QPixmap(label_pth)
             
             pixmap = pixmap.scaled(*label_cfg['size'], Qt.KeepAspectRatio)
@@ -224,8 +226,8 @@ class MainWindow(QMainWindow):
         time_index = self.slider.value()  # 获取滑块的当前值
         # self.canvas.plot_contour(self.data[time_index])  # 使用当前时间点数据更新图表
 
-        # 测试用 
-        data_pth = osp.join(proj_dir, self.cfg['data']['output_pth'])
+        # 测试用
+        data_pth = osp.join(PROJ_DIR, self.cfg['data']['output_pth'])
         data = self.get_data(data_pth)
         self.canvas.plot_contour(data)
     
@@ -248,7 +250,7 @@ def main(cfg_pth):
 
 
 if __name__ == '__main__':
-    cfg_pth = osp.join(proj_dir, "config/cfg_demo.yml")
+    cfg_pth = osp.join(PROJ_DIR, "config/cfg_demo.yml")
     main(cfg_pth)
 
 
